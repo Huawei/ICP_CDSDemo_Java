@@ -1,0 +1,360 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<meta http-equiv="X-UA-Compatible" content="IE=10">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>IPCC V200R001C80 CDS Interface Demo v1.0</title>
+	<script type="text/javascript" src="page/openjs/jquery-1.6.2.js"></script>
+	<script type="text/javascript" src="page/openjs/json.js"></script>
+	<script type="text/javascript" src="page/js/cds/dataInfo/hashMap.js"></script>
+	<script type="text/javascript" src="page/js/cds/dataInfo/globalVariable.js"></script>
+	<script type="text/javascript" src="page/js/cds/dataInfo/formConfig.js"></script>
+	<script type="text/javascript" src="page/js/cds/eventHandle/eventHandle.js"></script>
+	<script type="text/javascript" src="page/js/cds/eventHandle/eventProcess.js"></script>
+	<script type="text/javascript" src="page/js/cds/operation/init.js"></script>
+	<script type="text/javascript" src="page/js/cds/operation/callcontrol.js"></script>
+	
+	<!--1. Voice Ocx Events --------------------------------------------------------------------------------------------------->
+	<script type="text/javascript" event="VoiceInitResultEvent(sResult)" for="VoiceOcx">		
+		writeLog("VoiceInitResultEvent"+sResult); 
+		var result = JSON.parse(sResult);
+		VoiceInit(result);
+	</script>
+	
+	<script language="javascript" event="VoiceRegisterResultEvent(sResult)" for="VoiceOcx">
+	   writeLog("[VoiceRegisterResultEvent]" + sResult);
+	   var result = JSON.parse(sResult);
+	   RegisterPhone(result);
+	</script>
+	
+	<script language="javascript" event="VoiceDeregisterResultEvent(sResult)" for="VoiceOcx">
+	   writeLog("[VoiceDeregisterResultEvent]" + sResult);
+	</script>
+	
+	<script language="javascript" event="VoiceTalkAlertingEvent(sResult)" for="VoiceOcx">
+        writeLog("[VoiceTalkAlertingEvent]" + sResult);
+        var result = JSON.parse(sResult);
+		phoneAnswer(result.callid);
+	</script>
+	
+	<script language="javascript" event="VoiceTalkConnectedEvent(sResult)" for="VoiceOcx">
+		writeLog("[VoiceTalkConnectedEvent]" + sResult);
+	</script>
+	
+	<script language="javascript" event="VoiceTalkReleaseEvent(sResult)" for="VoiceOcx">	
+	   writeLog("[VoiceTalkReleaseEvent]" + sResult);
+	   var result = JSON.parse(sResult);
+	   clearCallId(result.caller)
+	</script>
+	<script type="text/javascript">
+		window.onbeforeunload = function() {		
+			var status = $("#status").html();
+			var workNo = $("#dispatchNum").val();
+			if(status == "Talking" || status == "Hold")
+			{
+				voiceRelease(workNo);
+				alert("挂断通话");
+				logout(dispatchNum);
+				alert("调度席签出");
+			}
+			
+			if(status == "login" || status == "Idle" || status == "Busy" || status == "working")
+			{
+				logout(dispatchNum);	
+				alert("调度席签出");
+			}
+		};
+		
+		function createWebSocket(userId){
+			if(window.WebSocket){
+				var ws = new WebSocket("ws://localhost:8080/CDSDemo/notice/status.do?userId=" + userId);
+				
+				ws.onmessage = function(evt) { 
+					writeLog("[UserStateNotify]"+evt.data);
+					var result = JSON.parse(evt.data);
+					var groupNumber = result.userStateList[0].talkGroupNumber;
+					var userNumber = result.userStateList[0].userNumber;
+					var opType = result.userStateList[0].operationType;
+					var opState = result.userStateList[0].operationState;
+					if(groupNumber != "undefined" && userNumber == global_phoneNum 
+							&& opType == "monitor" && opState != "notInOperation")
+					{
+						global_group_call_map.put(groupNumber, global_callId);
+					}
+					
+					if(opType == "emergencyCall" && opState == "inProcess")
+					{
+						StartPlayMediaFiles(userNumber,groupNumber);
+					}
+					
+					if((opType == "emergencyCall" && opState == "notInOperation")
+						||(opType == "subscribe" && opState == "notInOperation" && userNumber == global_phoneNum))
+					{
+						StopPlayMediaFiles(userNumber,groupNumber);
+					};										
+				}; 
+				
+				ws.onopen = function()
+				{
+					writeLog("[WebSocket] websocket is connected.");
+				};
+				
+				ws.onclose = function(evt)
+				{
+					writeLog("[WebSocket] websocket is closed。");
+				};
+				
+				ws.onerror = function(evt)
+				{
+					writeLog("[WebSocket] websocket error. Reconnecting...");
+					ws.open();
+				};
+				
+				return ws;
+			}
+			
+			return null;
+		}
+		
+	    //断开连接  
+	    function disconnect(ws) {  
+	        if (ws != null) {  
+	            ws.close();
+	            ws = null;
+	        }  
+	    }  
+		
+	</script>
+	
+	<style type="text/css">
+		input[type="button"]
+		{
+			height: 25px;
+			width: 165px;
+		}	
+	</style>
+	
+</head>	
+	<OBJECT ID="WndUiOcx" CLASSID="CLSID:C0EC67C2-CF8A-4E55-9AB3-8EF7E1BB1C94" width=0 height=0></OBJECT>
+	<OBJECT ID="ConferenceOcx" CLASSID="CLSID:254C557B-CC4D-4258-98E8-EAC7DE31D0A3" width=0 height=0></OBJECT>
+	<OBJECT ID="VoiceOcx" CLASSID="CLSID:0396287C-FEDD-4E49-866B-1CE1D2084390" width=0 height=0></OBJECT>	
+<body>
+<div style="float:left;width:65%">
+	<h3>初始化接口:</h3>
+	<table width="100%" border="0" cellpadding="0" cellspacing="3">
+		<tr>
+			<td>
+				账号:<input type="text" value="a4501" ID="dispatchNum"/>
+				密码:<input type="password" value="USMv6000" ID="password"/>
+				话机号码:<input type="text" value="4501" ID="phonenumber"/>
+				话机密码:<input type="password" value="" ID="Phonepassword"/></br>
+			</td>
+		</tr> 
+		<tr>
+			<td>
+				登录状态:<span id="status">Not login</span>
+			</td>
+		</tr>
+	</table>
+	<table width="100%" border="0" cellpadding="0" cellspacing="3">
+		<tr>
+			<td>
+				<input type="button" value="登录" ID="Login"/>
+
+				<input type="button" value="退出" ID="Logout"/>
+
+				<input type="button" value="注册CDS服务" ID="registerCDS" isRegister=true />
+				
+				<input type="button" value="注销CDS服务" ID="unRegisterCDS" isRegister=false />
+				
+				<input type="button" value="软电话注册" ID="registerSoftPhone"/>
+
+				<input type="checkbox" ID="AutoAnswer" checked="checked"/>语音自动应答
+                <!-- <input type="button" value="CallBack" ID="callbackButton"/> -->
+			</td>										   
+		</tr>
+	</table>
+	
+	<h3>媒体控制接口:</h3>
+	
+    <table width="100%" border="0" cellpadding="0" cellspacing="3" id="tb_voice_controller_form" submit_type="" style="display:none;">
+       <thead>
+        <tr>
+            <td><h4></h4></td>
+            <td>
+                <input type="submit" value="submit" ID=""/>
+            </td>
+        </tr>
+       </thead>
+       <tbody id="tb_voice_controller_form_body"></tbody>
+    </table>
+    
+    <table width="100%" border="0" cellpadding="0" cellspacing="3" id="tb_voice_controller">
+		<tr>
+			<td>
+			    <input type="button" value="音频配置信息" submitType="AudioConfig"/>
+			
+				<input type="button" value="语音应答" submitType="voicecallAnswer"/>
+			
+				<input type="button" value="语音挂断" submitType="voicecallRelease"/>
+				
+				<input type="button" value="查询群组呼叫信息" submitType="getGroupCallInfo"/>
+				
+				<input type="button" value="获取配置项" submitType="getConfigItem"/>
+				
+				<input type="button" value="设置配置项" submitType="setConfigItem"/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<input type="button" value="录音列表" submitType="recordList"/>
+
+				<input type="button" value="获取一次性口令" submitType="getOnceCard"/>
+				
+				<input type="button" value="录音回放" submitType="recordRepeat"/>
+			
+				<input type="button" value="停止播放紧急呼叫提示音" submitType="stopEmergencyVoice"/>
+
+				<input type="button" value="下载紧急呼叫提示音" id="downloadFile"/>
+				
+			</td>											
+		</tr>
+	</table>
+
+	<h3>抢权控制接口:</h3>
+	
+	<table width="100%" border="0" cellpadding="0" cellspacing="3" id="tb_power_controller_form" submit_type="" style="display:none;">
+       <thead>
+        <tr>
+            <td><h4></h4></td>
+            <td>
+                <input type="submit" value="submit" ID=""/>
+            </td>
+        </tr>
+       </thead>
+       <tbody id="tb_power_controller_form_body"></tbody>
+    </table>
+	
+	<h4></h4>
+	<table width="100%" border="0" cellpadding="0" cellspacing="3" id="tb_power_controller">
+		<tr>
+			<td>
+				<input type="button" value="Select" submitType="select"/>
+
+				<input type="button" value="DeSelect" submitType="deSelect"/>
+
+				<input type="button" value="PTT" submitType="ptt"/>
+				
+				<input type="button" value="DePTT" submitType="dePtt"/>
+			</td>											
+		</tr>
+	</table>
+	
+	<h3>呼叫控制接口:</h3>
+	
+	<table width="100%" border="0" cellpadding="0" cellspacing="3" id="tb_call_controller_form" submit_type="" style="display:none;">
+       <thead>
+        <tr>
+            <td><h4></h4></td>
+            <td>
+                <input type="submit" value="submit" ID=""/>
+            </td>
+        </tr>
+       </thead>
+       <tbody id="tb_call_controller_form_body"></tbody>
+    </table>
+    
+    <h4></h4>
+	<table width="100%" border="0" cellpadding="0" cellspacing="3" id="tb_call_controller">
+		<tr>
+			<td>普通群组：</td>
+			<td>
+				<input type="button" value="订阅" submitType="subscribe"/>
+			
+				<input type="button" value="取消订阅" submitType="deSubscribe"/>
+			
+				<input type="button" value="Monitor" submitType="monitor"/>
+			
+				<input type="button" value="DeMonitor" submitType="deMonitor"/>
+			</td>
+		</tr>
+		<tr>
+			<td>混编群组：</td>
+			<td>
+				<input type="button" value="发起混编呼叫" submitType="mixedGroupCallStart"/>
+			
+				<input type="button" value="结束混编呼叫" submitType="mixedGroupCallEnd"/>
+				
+				<input type="button" value="混编群组成员变更" submitType="mixedGroupUserStateChange"/>
+			</td>
+		</tr>
+		<tr>
+			<td>紧急呼叫：</td>
+			<td>
+				<input type="button" value="紧急呼叫应答" submitType="emergencyAnswer"/>
+				<input type="button" value="紧急呼叫离会" submitType="emergencyExit"/>
+			</td>
+		</tr>
+	</table>
+    
+	<h3>CDS配置接口:</h3>
+	
+	<table width="100%" border="0" cellpadding="0" cellspacing="3" id="tb_config_form" submit_type="" style="display:none;">
+	   <thead>
+	    <tr>
+            <td><h4></h4></td>
+            <td>
+                <input type="submit" value="submit" ID=""/>
+            </td>
+        </tr>
+	   </thead>
+	   <tbody id="tb_config_form_body"></tbody>
+    </table>
+    
+    <h4></h4>
+	<table width="100%" border="0" cellpadding="0" cellspacing="3" id="tb_config">
+		<tr id="tr_config_radio">
+			<td>无线集群群组：</td>
+			<td>
+				<input type="button" value="获取无线集群群组信息" submitType="radioGet"/>
+				<input type="button" value="获取无线集群群组列表" submitType="radioList"/>
+			</td>
+		</tr>
+		<tr>
+			<td>集群群组：</td>
+			<td>
+				<input type="button" value="获取集群群组信息" submitType="groupGet"/>
+				<input type="button" value="获取集群群组列表" submitType="groupList"/>
+			</td>
+		</tr>
+		<tr>
+			<td>接入号码：</td>
+			<td>
+				<input type="button" value="获取接入号码信息" submitType="proxyGet"/>
+				<input type="button" value="获取接入号码列表" submitType="proxyList"/>
+			</td>
+		</tr>
+		<tr>
+		<td>业务参数：</td>
+			<td>
+				<input type="button" value="获取业务参数" submitType="pubParamtersGet"/>
+			</td>
+		</tr>
+		<tr>
+			<td>集群群组状态查询：</td>
+			<td>
+				<input type="button" value="集群群组状态查询" submitType="groupStateQuery"/>
+			</td>
+		</tr>
+	</table>
+</div>
+<div style="float:left;width:35%;">
+	<p>日志</p>
+	<p>
+		<input type="button" value="清空" ID="clearLog"/>
+	</p>
+
+	<textarea id="LogInfo" readonly="readonly" rows="50" style="width:98%;height:600px;"></textarea>
+</div>
+</body>
+</html>

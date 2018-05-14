@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="30 seconds">
+	<property name="log.dir" value="${catalina.base}/logs/cdsdemo" />
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">  
+        <file>${log.dir}/cdsdemo.log</file>  
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
+             <fileNamePattern>${log.dir}/cdsdemo.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>  
+             <maxHistory>10</maxHistory>         
+        <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+             <maxFileSize>50MB</maxFileSize>
+        </timeBasedFileNamingAndTriggeringPolicy>  
+        </rollingPolicy> 
+        <encoder>  
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-20method] [%msg] [%thread] [%file:%line]%n</pattern>  
+        </encoder>  
+    </appender>
+    
+    <logger name="com.huawei.cdsdemo.service.CDSService" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+    
+    <logger name="com.huawei.cdsdemo.service.GroupCallService" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+    
+    <logger name="com.huawei.cdsdemo.service.GroupService" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+    
+    <logger name="com.huawei.cdsdemo.service.GroupStateService" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+    
+    <logger name="com.huawei.cdsdemo.service.MixedGroupCallService" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+    
+    <logger name="com.huawei.cdsdemo.service.ProxyService" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+    
+    <logger name="com.huawei.cdsdemo.service.PubParamService" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+    
+    <logger name="com.huawei.cdsdemo.service.RadioService" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+    
+    <logger name="com.huawei.cdsdemo.servlet.CallBackURLServlet" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+    
+    <logger name="com.huawei.cdsdemo.util.ConfigProperties" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+    
+</configuration>
+
+
+
+
+
+
+

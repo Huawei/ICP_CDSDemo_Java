@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+  <display-name>CDSDemo</display-name>
+  
+  <welcome-file-list>
+    <welcome-file>CDSApp.html</welcome-file>
+  </welcome-file-list>
+  
+  <!-- 初始化 -->
+  <listener>
+    <listener-class>com.huawei.cdsdemo.servlet.InitServletListener</listener-class>
+  </listener>
+  
+  <servlet>
+      <servlet-name>download_servlet</servlet-name>
+      <servlet-class>com.huawei.cdsdemo.servlet.DownloadServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+      <servlet-name>download_servlet</servlet-name>
+      <url-pattern>/download.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>LoginToUportal</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.LoginToUportalServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LoginToUportal</servlet-name>
+    <url-pattern>/loginToUportal.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>LogoutFromUportal</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.LogoutFromUportalServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LogoutFromUportal</servlet-name>
+    <url-pattern>/logoutFromUportal.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>WebSocket</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.NoticeStatusWSServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>WebSocket</servlet-name>
+    <url-pattern>/notice/status.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>RegisterServlet</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.RegisterServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RegisterServlet</servlet-name>
+    <url-pattern>/register.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>HeartBeatServlet</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.HeartBeatServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>HeartBeatServlet</servlet-name>
+    <url-pattern>/heartbeat.do</url-pattern>
+  </servlet-mapping>
+  
+  <!-- 媒体控制 -->
+  <servlet>
+    <servlet-name>RecordServlet</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.RecordServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RecordServlet</servlet-name>
+    <url-pattern>/record.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>OnceServlet</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.OnceServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>OnceServlet</servlet-name>
+    <url-pattern>/once.do</url-pattern>
+  </servlet-mapping>
+  
+  <!-- 抢权控制 -->
+  <servlet>
+    <servlet-name>SelectServlet</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.groupcall.SelectServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SelectServlet</servlet-name>
+    <url-pattern>/select.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>PTTServlet</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.groupcall.PTTServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PTTServlet</servlet-name>
+    <url-pattern>/ptt.do</url-pattern>
+  </servlet-mapping>
+  
+  <!-- 呼叫控制 -->
+  <servlet>
+    <servlet-name>SubscribeServlet</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.groupcall.SubscribeServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SubscribeServlet</servlet-name>
+    <url-pattern>/subscribe.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>MonitorServlet</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.groupcall.MonitorServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>MonitorServlet</servlet-name>
+    <url-pattern>/monitor.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>MixedGroupCallServlet</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.groupcall.MixedGroupCallServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>MixedGroupCallServlet</servlet-name>
+    <url-pattern>/mixGroupCall.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>EmergencyServlet</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.groupcall.EmergencyServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>EmergencyServlet</servlet-name>
+    <url-pattern>/emergencyAnswer.do</url-pattern>
+  </servlet-mapping>
+  
+  <!-- CDS配置 -->
+  <servlet>
+    <servlet-name>RadioServlet</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.config.RadioServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RadioServlet</servlet-name>
+    <url-pattern>/radio.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>GroupServlet</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.config.GroupServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GroupServlet</servlet-name>
+    <url-pattern>/group.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>PubParamServlet</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.config.PubParamServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PubParamServlet</servlet-name>
+    <url-pattern>/pubParam.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>ProxyServlet</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.config.ProxyServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ProxyServlet</servlet-name>
+    <url-pattern>/jasProxy.do</url-pattern>
+  </servlet-mapping>
+  
+    <servlet>
+    <servlet-name>GroupStateServlet</servlet-name>
+    <servlet-class>com.huawei.cdsdemo.servlet.config.GroupStateServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GroupStateServlet</servlet-name>
+    <url-pattern>/state.do</url-pattern>
+  </servlet-mapping>
+
+</web-app>

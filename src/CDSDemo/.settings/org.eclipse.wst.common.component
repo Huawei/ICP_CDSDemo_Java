@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="CDSDemo">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/webapp"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <property name="java-output-path" value="/CDSDemo/build/classes"/>
+        <property name="context-root" value="CDSDemo"/>
+        <property name="component.exclusion.patterns" value="WEB-INF/lib/tomcat-api-7.0.70.jar,WEB-INF/lib/tomcat-servlet-api-7.0.70.jar,WEB-INF/lib/tomcat-util-7.0.70.jar,WEB-INF/lib/tomcat-juli-7.0.70.jar,WEB-INF/lib/tomcat-coyote-7.0.70.jar,WEB-INF/lib/tomcat-catalina-7.0.70.jar,WEB-INF/lib/tomcat-annotations-api-7.0.70.jar"/>
+    </wb-module>
+</project-modules>
